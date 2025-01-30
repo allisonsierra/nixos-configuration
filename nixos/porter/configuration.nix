@@ -124,10 +124,14 @@
     isNormalUser = true;
     description = "Allie Sierra";
     extraGroups = [ "networkmanager" "wheel" "mlocate" ];
+    shell = pkgs.zsh;
     packages = with pkgs; [
     #  thunderbird
     ];
   };
+
+  # zsh
+  programs.zsh.enable = true;
 
   # Install firefox.
   programs.firefox.enable = true;
@@ -162,7 +166,8 @@
      obsidian
      inkscape-with-extensions
      krita
-     direnv    
+     direnv
+     starship   
  
      # Media
      vdhcoapp #Video Downloadhelper for FF Extension
@@ -172,22 +177,32 @@
      # Communication
      discord
      zoom-us
+     
+     
+  ];
 
-     # Fonts
-     montserrat
-     
-     
+  # Fonts
+  fonts.packages = with pkgs; [
+    montserrat
+    nerdfonts
+    fira-code
+    fira-code-symbols
+    noto-fonts
+    noto-fonts-cjk-sans
+    liberation_ttf
+
   ];
 
   # Nix Configuration
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   # List services that you want to enable:
-  services.locate.package = {
-    enable = true;
-    locate = pkgs.mlocate;
-    interval = "hourly";
-  };
+  services.locate.enable = true;
+  #services.locate.package = {
+  #  enable = true;
+  #  locate = pkgs.mlocate;
+  #  interval = "hourly";
+  #};
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
