@@ -144,6 +144,7 @@
      rclone
      lshw
      mlocate
+     gnome-keyring
 
      #display
      autorandr
