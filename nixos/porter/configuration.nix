@@ -119,6 +119,9 @@
     pulse.enable = true;
   };
 
+  # Keyring
+  security.pam.services.lightdm.enableGnomeKeyring = true;
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.allie = {
     isNormalUser = true;
