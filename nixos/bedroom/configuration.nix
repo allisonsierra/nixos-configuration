@@ -132,11 +132,7 @@
   ];
 
   # List services that you want to enable:
-  services.locate.package = {
-    enable = true;
-    locate = pkgs.mlocate;
-    interval = "hourly";
-  };
+  services.locate.enable = true;
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
