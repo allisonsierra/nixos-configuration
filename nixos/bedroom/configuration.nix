@@ -11,10 +11,10 @@
 { config, pkgs, ... }:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+  ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -73,16 +73,23 @@
   users.users.allie = {
     isNormalUser = true;
     description = "Allie Sierra";
-    extraGroups = [ "networkmanager" "wheel" "mlocate"];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "mlocate"
+    ];
     packages = with pkgs; [
-    #  thunderbird
+      #  thunderbird
     ];
   };
 
   users.users.television = {
     isNormalUser = true;
     description = "Television";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+    ];
   };
 
   services.displayManager.autoLogin = {
@@ -100,7 +107,7 @@
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     # System
-    vim 
+    vim
     wget
     curl
     pkgs.kdePackages.kdeconnect-kde
@@ -112,15 +119,18 @@
     direnv
 
     #media
-    vdhcoapp #Video Downloadhelper for FF Extension
+    vdhcoapp # Video Downloadhelper for FF Extension
     mpv
     vlc
- 
+
   ];
 
   # Nix Configuration
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
+
   # List services that you want to enable:
   services.locate.package = {
     enable = true;
