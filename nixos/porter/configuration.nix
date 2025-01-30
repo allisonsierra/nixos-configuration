@@ -1,3 +1,7 @@
+# DON'T EDIT THIS FILE IN /etc/nixos/configuration.nix
+# EDIT THIS from github.com/allisonsierra/nixos-configuration
+# AND DEPLOY VIA `just deploy-nixos porter`
+#
 # MSI WS65 Laptop "Porter"
 # Hybrid Nvidia/Intel Optimus GPU - Quadro RTX 4000
 #
