@@ -164,13 +164,26 @@
 
      # Dev
      git
-     vscode
      rustup
      obsidian
      inkscape-with-extensions
      krita
      direnv
-     starship   
+     starship
+
+     (vscode-with-extensions.override {
+        vscodeExtensions = with vscode-extensions; [
+          bbenoist.nix
+          github.vscode-github-actions
+          golang.go
+          hashicorp.terraform
+          rust-lang.rust-analyzer
+          tamasfe.even-better-toml
+          skellock.just
+          davidanson.vscode-markdownlint
+        ]; 
+        }
+     )
  
      # Media
      vdhcoapp #Video Downloadhelper for FF Extension
