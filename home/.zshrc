@@ -9,3 +9,4 @@ bindkey -v
 # End of lines configured by zsh-newuser-install
 #
 eval "$(starship init zsh)"
+eval "$(direnv hook zsh)"
