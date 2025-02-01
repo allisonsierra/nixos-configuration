@@ -140,16 +140,19 @@
   # Open ports in the firewall.
   networking.firewall.allowedTCPPorts = [
     22
-    {
-      from = 1714; 
-      to = 1764;
-    } #KDE Connect
   ];
-  networking.firewall.allowedUDPPorts = [
+  networking.firewall.allowedTCPPortRAnges = [
+
     {
       from = 1714;
       to = 1764;
-    } #KDE Connect
+    } # KDE Connect
+  ];
+  networking.firewall.allowedUDPPortRamges = [
+    {
+      from = 1714;
+      to = 1764;
+    } # KDE Connect
   ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
