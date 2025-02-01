@@ -141,14 +141,14 @@
   networking.firewall.allowedTCPPorts = [
     22
   ];
-  networking.firewall.allowedTCPPortRAnges = [
+  networking.firewall.allowedTCPPortRanges = [
 
     {
       from = 1714;
       to = 1764;
     } # KDE Connect
   ];
-  networking.firewall.allowedUDPPortRamges = [
+  networking.firewall.allowedUDPPortRanges = [
     {
       from = 1714;
       to = 1764;
