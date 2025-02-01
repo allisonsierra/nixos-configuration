@@ -132,18 +132,28 @@
   ];
 
   # List services that you want to enable:
-  services.locate.package = {
-    enable = true;
-    locate = pkgs.mlocate;
-    interval = "hourly";
-  };
+  services.locate.enable = true;
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
 
   # Open ports in the firewall.
-  networking.firewall.allowedTCPPorts = [ 22 ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
+  networking.firewall.allowedTCPPorts = [
+    22
+  ];
+  networking.firewall.allowedTCPPortRanges = [
+
+    {
+      from = 1714;
+      to = 1764;
+    } # KDE Connect
+  ];
+  networking.firewall.allowedUDPPortRanges = [
+    {
+      from = 1714;
+      to = 1764;
+    } # KDE Connect
+  ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
