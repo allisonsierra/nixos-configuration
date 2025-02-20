@@ -205,6 +205,7 @@
     vdhcoapp # Video Downloadhelper for FF Extension
     vlc
     mpv
+    spotify
 
     # Communication
     discord
