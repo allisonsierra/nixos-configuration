@@ -159,7 +159,6 @@
     rclone
     lshw
     gnome-keyring
-    
 
     # Display
     autorandr
@@ -178,18 +177,28 @@
     okular
 
     (vscode-with-extensions.override {
-      vscodeExtensions = with vscode-extensions; [
-        bbenoist.nix
-        mkhl.direnv
-        github.vscode-github-actions
-        golang.go
-        hashicorp.terraform
-        rust-lang.rust-analyzer
-        tamasfe.even-better-toml
-        skellock.just
-        davidanson.vscode-markdownlint
-        usernamehw.errorlens
-      ];
+      vscodeExtensions =
+        with vscode-extensions;
+        [
+          bbenoist.nix
+          mkhl.direnv
+          github.vscode-github-actions
+          golang.go
+          hashicorp.terraform
+          rust-lang.rust-analyzer
+          tamasfe.even-better-toml
+          skellock.just
+          davidanson.vscode-markdownlint
+          usernamehw.errorlens
+        ]
+        ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+          {
+            name = "rustowl-vscode";
+            publisher = "cordx56";
+            version = "0.1.3";
+            sha256 = "1z90in9kf3xh8bgsk678k22vnz86i7mfy4ckph915m37rpim7243";
+          }
+        ];
     })
 
     # Media
@@ -231,7 +240,6 @@
   hardware.bluetooth.enable = true; # enables support for Bluetooth
   hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
   services.blueman.enable = true;
-
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
