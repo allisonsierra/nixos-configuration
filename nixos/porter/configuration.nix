@@ -180,6 +180,7 @@
     (vscode-with-extensions.override {
       vscodeExtensions = with vscode-extensions; [
         bbenoist.nix
+        mkhl.direnv
         github.vscode-github-actions
         golang.go
         hashicorp.terraform
@@ -187,6 +188,7 @@
         tamasfe.even-better-toml
         skellock.just
         davidanson.vscode-markdownlint
+        usernamehw.errorlens
       ];
     })
 
