@@ -190,6 +190,7 @@
           bbenoist.nix
           mkhl.direnv
           github.vscode-github-actions
+          github.vscode-pull-request-github
           golang.go
           hashicorp.terraform
           rust-lang.rust-analyzer
