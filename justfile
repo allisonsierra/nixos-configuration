@@ -29,4 +29,4 @@ clean-nixos-boot:
 clean-nixos-gcroots:
   sudo rm -rf /nix/var/nix/gcroots/auto/*
 
-clean-nixos-full: update-nixos upgrade-nixos clean-nixos-gcroots clean-nixos clean-nixos-boot
+clean-nixos-full: update-nixos upgrade-nixos clean-nixos-gcroots clean-nixos-boot clean-nixos
