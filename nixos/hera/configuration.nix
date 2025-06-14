@@ -9,7 +9,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   imports = [
@@ -116,12 +116,12 @@
     rclone
     lshw
     gnome-keyring
+    file-roller
 
     # Display
     autorandr
     arandr
     mons
-    pkgs.nvtopPackages.nvidia
 
     # Dev
     git
@@ -169,6 +169,13 @@
     discord
     zoom-us
 
+    # Music
+    lmms
+    ardour
+    vital
+    infamousPlugins
+    lsp-plugins
+
   ];
 
   # Fonts
@@ -188,6 +195,25 @@
     "nix-command"
     "flakes"
   ];
+
+  environment.variables =
+    let
+      makePluginPath = format:
+        (lib.makeSearchPath format [
+          "$HOME/.nix-profile/lib"
+          "/run/current-system/sw/lib"
+          "/etc/profiles/per-user/$USER/lib"
+        ])
+        + ":$HOME/.${format}";
+    in
+    {
+      DSSI_PATH = makePluginPath "dssi";
+      LADSPA_PATH = makePluginPath "ladspa";
+      LV2_PATH = makePluginPath "lv2";
+      LXVST_PATH = makePluginPath "lxvst";
+      VST_PATH = makePluginPath "vst";
+      VST3_PATH = makePluginPath "vst3";
+    };
 
   # List services that you want to enable:
   services.locate.enable = true;
