@@ -175,6 +175,13 @@
     vital
     infamousPlugins
     lsp-plugins
+    audacity
+    vcv-rack
+    x42-avldrums
+
+    # Windows Support
+    wineWowPackages.stable
+    winetricks
 
   ];
 
