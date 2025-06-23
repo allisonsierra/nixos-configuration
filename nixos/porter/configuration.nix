@@ -9,7 +9,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   imports = [
@@ -151,6 +151,14 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
+  # Steam
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+    localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
+  };
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
@@ -166,6 +174,11 @@
     gnome-keyring
     via
     file-roller
+    p7zip
+
+    # Windows support
+    wineWowPackages.stable
+    winetricks
 
     # Display
     autorandr
@@ -182,6 +195,15 @@
     direnv
     starship
     okular
+
+    # Music
+    lmms
+    ardour
+    vital
+    infamousPlugins
+    lsp-plugins
+    x42-avldrums
+    vcv-rack
 
     (vscode-with-extensions.override {
       vscodeExtensions =
@@ -258,6 +280,27 @@
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
+
+  # LMMS VST
+  environment.variables =
+    let
+      makePluginPath = format:
+        (lib.makeSearchPath format [
+          "$HOME/.nix-profile/lib"
+          "/run/current-system/sw/lib"
+          "/etc/profiles/per-user/$USER/lib"
+        ])
+        + ":$HOME/.${format}";
+    in
+    {
+      DSSI_PATH = makePluginPath "dssi";
+      LADSPA_PATH = makePluginPath "ladspa";
+      LV2_PATH = makePluginPath "lv2";
+      LXVST_PATH = makePluginPath "lxvst";
+      VST_PATH = makePluginPath "vst";
+      VST3_PATH = makePluginPath "vst3";
+    };
+
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
