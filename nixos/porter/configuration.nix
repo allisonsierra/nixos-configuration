@@ -9,7 +9,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   imports = [
@@ -174,6 +174,11 @@
     gnome-keyring
     via
     file-roller
+    p7zip
+
+    # Windows support
+    wineWowPackages.stable
+    winetricks
 
     # Display
     autorandr
@@ -197,6 +202,8 @@
     vital
     infamousPlugins
     lsp-plugins
+    x42-avldrums
+    vcv-rack
 
     (vscode-with-extensions.override {
       vscodeExtensions =
@@ -278,7 +285,7 @@
   environment.variables =
     let
       makePluginPath = format:
-        (makeSearchPath format [
+        (lib.makeSearchPath format [
           "$HOME/.nix-profile/lib"
           "/run/current-system/sw/lib"
           "/etc/profiles/per-user/$USER/lib"
