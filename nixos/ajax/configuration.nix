@@ -2,7 +2,7 @@
 # EDIT THIS from github.com/allisonsierra/nixos-configuration
 # AND DEPLOY VIA `just deploy-nixos ajax`
 #
-# Gaming Rig "Porter"
+# Gaming Rig "Ajax"
 #
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
