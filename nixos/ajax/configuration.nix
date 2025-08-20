@@ -129,6 +129,7 @@
         "networkmanager" 
         "wheel" 
         "mlocate"
+        "libvirtd"
     ];
     shell = pkgs.zsh;
     packages = with pkgs; [
@@ -156,10 +157,24 @@
 
   # Virtualization
   programs.virt-manager.enable = true;
-  users.groups.libvirtd.members = ["allie"];
-  virtualisation.libvirtd.enable = true;
   virtualisation.spiceUSBRedirection.enable = true;
   
+  virtualisation.libvirtd = {
+    enable = true;
+    qemu = {
+      package = pkgs.qemu_kvm;
+      runAsRoot = true;
+      swtpm.enable = true;
+      ovmf = {
+        enable = true;
+        packages = [(pkgs.OVMF.override {
+          secureBoot = true;
+          tpmSupport = true;
+        }).fd];
+      };
+    };
+  };
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
@@ -176,8 +191,10 @@
     via
     file-roller
     p7zip
+    keepass
     sysbench
     openrgb-with-all-plugins
+    
 
     # Windows support
     wineWowPackages.stable
@@ -245,6 +262,15 @@
     zoom-us
   ];
 
+  # Fonts
+  fonts.packages = with pkgs; [
+    montserrat
+    fira-code
+    fira-code-symbols
+    noto-fonts
+    noto-fonts-cjk-sans
+    liberation_ttf
+  ];
 
   # Nix Configuration
   nix.settings.experimental-features = [
