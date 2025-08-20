@@ -247,10 +247,12 @@
   # Fonts
   fonts.packages = with pkgs; [
     montserrat
-    fira-code
-    fira-code-symbols
+    nerd-fonts.fira-code
+    nerd-fonts.fira-mono
+    nerd-fonts.hack
     noto-fonts
     noto-fonts-cjk-sans
+    noto-fonts-emoji
     liberation_ttf
   ];
 
