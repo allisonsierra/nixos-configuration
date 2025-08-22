@@ -22,6 +22,9 @@
 
   networking.hostName = "ajax"; # Define your hostname.
 
+  # NTFS Support
+  boot.supportedFilesystems = [ "ntfs" ];
+
   # Enable networking
   networking.networkmanager.enable = true;
 
@@ -223,7 +226,7 @@
     infamousPlugins
     lsp-plugins
     x42-avldrums
-    vcv-rack
+    #vcv-rack
 
     (vscode-with-extensions.override {
       vscodeExtensions =
@@ -282,6 +285,9 @@
 
   # List services that you want to enable:
   services.locate.enable = true;
+
+  # Corsair RGB Management
+  services.hardware.openrgb.enable = true;
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
