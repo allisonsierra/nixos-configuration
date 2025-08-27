@@ -20,13 +20,37 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "ajax"; # Define your hostname.
+  boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  # NTFS Support
-  boot.supportedFilesystems = [ "ntfs" ];
+  boot.kernelParams = [ "amd_pstate=guided" ];
+
+  boot.blacklistedKernelModules = [ "amdgpu" ];
+
+  networking.hostName = "ajax"; # Define your hostname.
 
   # Enable networking
   networking.networkmanager.enable = true;
+  networking.networkmanager.insertNameservers = [ "127.0.0.1" ];
+
+  # Local DNS caching
+  services.coredns.enable = true;
+  services.coredns.config =
+  ''
+    . {
+      # Cloudflare and Google
+      forward . 1.1.1.1 1.0.0.1 8.8.8.8 8.8.4.4
+      cache
+    }
+
+    # Returns 127.0.0.1 for any .local address
+    # TODO: 
+    # local {
+    #   template IN A  {
+    #       answer "{{ .Name }} 0 IN A 127.0.0.1"
+    #   }
+    }
+  '';
+
 
   # Set your time zone.
   time.timeZone = "America/New_York";
@@ -63,12 +87,12 @@
     variant = "";
   };
 
-
   # See https://nixos.wiki/wiki/Nvidia for details on the config below
 
   # Enable OpenGL
   hardware.graphics = {
     enable = true;
+    #enable32Bit = true;
   };
 
   # Load nvidia driver for Xorg and Wayland
@@ -133,6 +157,7 @@
         "wheel" 
         "mlocate"
         "libvirtd"
+        "media"
     ];
     shell = pkgs.zsh;
     packages = with pkgs; [
@@ -140,6 +165,8 @@
     ];
     
   };
+
+  users.groups.media.gid = 948;
 
   # zsh
   programs.zsh.enable = true;
@@ -168,6 +195,7 @@
       package = pkgs.qemu_kvm;
       runAsRoot = true;
       swtpm.enable = true;
+      vhostUserPackages = [ pkgs.virtiofsd ]; # Share disk between host and guest
       ovmf = {
         enable = true;
         packages = [(pkgs.OVMF.override {
@@ -197,6 +225,8 @@
     keepass
     sysbench
     openrgb-with-all-plugins
+    chromium
+    dnsutils
     
 
     # Windows support
@@ -263,6 +293,7 @@
     # Communication
     discord
     zoom-us
+    signal-desktop
   ];
 
   # Fonts
