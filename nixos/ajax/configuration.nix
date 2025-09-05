@@ -26,28 +26,26 @@
 
   boot.kernelParams = [ "amd_pstate=guided" ];
 
-  boot.blacklistedKernelModules = [ "amdgpu" ];
-
   boot.initrd.availableKernelModules = [ "nvme" "ahci" "xhci_pci" "usb_storage" "usbhid" "sd_mod" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-amd" ];
-  boot.extraModulePackages = [ ];
+  boot.extraModulePackages = with config.boot.kernelPackages; [ xpadneo ];
+  boot.extraModprobeConfig = "options bluetooth disable_ertm=Y amdgpu ppfeaturemask=0xffffffff";
 
   # Networking
   networking.hostName = "ajax"; 
   networking.networkmanager.enable = true;
-  networking.networkmanager.insertNameservers = [ "127.0.0.1" ];
 
   # Open ports in the firewall.
    networking.firewall.allowedTCPPorts = [ 22 ];
   # networking.firewall.allowedUDPPorts = [ ... ];
 
-  networking.interfaces.wlp13s0.useDHCP = lib.mkDefault true;
+  # networking.interfaces.wlp13s0.useDHCP = lib.mkDefault true;
   
   networking.useDHCP = false;
   networking.bridges = {
     "br0" = {
-      interfaces = [ "enp12s0" ];
+      interfaces = [ "enp14s0" ];
     };
   };
   networking.interfaces.br0.ipv4.addresses = [ {
@@ -55,7 +53,7 @@
     prefixLength = 24;
   } ];
   networking.defaultGateway = "172.16.1.1";
-  networking.nameservers = ["4.2.2.2" "8.8.8.8"];
+  networking.nameservers = ["127.0.0.1" "4.2.2.2" "8.8.8.8"];
 
   # Local DNS caching
   services.coredns.enable = true;
@@ -117,44 +115,11 @@
   # Enable OpenGL
   hardware.graphics = {
     enable = true;
-    #enable32Bit = true;
+    enable32Bit = true;
   };
 
-  # Load nvidia driver for Xorg and Wayland
-  services.xserver.videoDrivers = [ "nvidia" ];
-
-  hardware.nvidia = {
-
-    # Modesetting is required.
-    modesetting.enable = true;
-
-    # Nvidia power management. Experimental, and can cause sleep/suspend to fail.
-    # Enable this if you have graphical corruption issues or application crashes after waking
-    # up from sleep. This fixes it by saving the entire VRAM memory to /tmp/ instead
-    # of just the bare essentials.
-    powerManagement.enable = false;
-
-    # Fine-grained power management. Turns off GPU when not in use.
-    # Experimental and only works on modern Nvidia GPUs (Turing or newer).
-    powerManagement.finegrained = false;
-
-    # Use the NVidia open source kernel module (not to be confused with the
-    # independent third-party "nouveau" open source driver).
-    # Support is limited to the Turing and later architectures. Full list of
-    # supported GPUs is at:
-    # https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus
-    # Only available from driver 515.43.04+
-    # Currently alpha-quality/buggy, so false is currently the recommended setting.
-    open = false;
-
-    # Enable the Nvidia settings menu,
-    # accessible via `nvidia-settings`.
-    nvidiaSettings = true;
-
-    # Optionally, you may need to select the appropriate driver version for your specific GPU.
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
-
-  };
+  systemd.packages = with pkgs; [ lact ];
+  systemd.services.lactd.wantedBy = ["multi-user.target"];
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
@@ -252,7 +217,12 @@
     openrgb-with-all-plugins
     chromium
     dnsutils
-    
+    mangohud
+    mission-center
+
+    # Disk usage analyzers
+    baobab
+    qdirstat
 
     # Windows support
     wineWowPackages.stable
@@ -262,7 +232,14 @@
     autorandr
     arandr
     mons
-    pkgs.nvtopPackages.nvidia
+    radeontop
+    lact
+    amdgpu_top
+
+    # Gaming
+    steamtinkerlaunch # https://github.com/LucaPisl/LinuxModdingGuide
+    limo
+    protontricks
 
     # Dev
     git
@@ -333,6 +310,28 @@
     liberation_ttf
   ];
 
+  # Enable Bluetooth
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+    settings.General = {
+      experimental = true; # show battery
+
+      # https://www.reddit.com/r/NixOS/comments/1ch5d2p/comment/lkbabax/
+      # for pairing bluetooth controller
+      Privacy = "device";
+      JustWorksRepairing = "always";
+      Class = "0x000100";
+      FastConnectable = true;
+    };
+  };
+
+  services.blueman.enable = true;
+
+  hardware.xpadneo.enable = true; # Enable the xpadneo driver for Xbox One wireless controllers
+
+
+
   # Nix Configuration
   nix.settings.experimental-features = [
     "nix-command"
@@ -367,11 +366,14 @@
       options = [ "fmask=0077" "dmask=0077" ];
     };
 
-  fileSystems."/mount/media" =
-    { device = "/dev/disk/by-uuid/2A57-D4B1";
-      fsType = "exfat";
-      noCheck = true;
-      options = [ "gid=948" "uid=1000" "fmask=0013" "dmask=0002"];
+  fileSystems."/mount/media01" =
+    { device = "/dev/disk/by-uuid/2b62aa5a-f95a-4de6-82f6-2561d42b09cd";
+      fsType = "ext4";
+    };
+
+  fileSystems."/mount/media02" =
+    { device = "/dev/disk/by-uuid/ebea71ad-d3a8-434a-bb02-abe13862d550";
+      fsType = "ext4";
     };
 
   fileSystems."/mount/data01" =

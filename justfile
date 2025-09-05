@@ -7,7 +7,7 @@ _default:
 
 
 deploy-nixos name:
-  sudo cp nixos/{{name}}/*.nix /etc/nixos/ && sudo nixos-rebuild switch  
+  sudo cp nixos/{{name}}/*.nix /etc/nixos/ && sudo nixos-rebuild switch
 
 deploy-starship:
   cp home/.config/starship.toml ~/.config/starship.toml
@@ -18,6 +18,7 @@ update-nixos:
 
 upgrade-nixos:
   sudo nix-env --upgrade --always
+  sudo nixos-rebuild switch --upgrade 
 
 clean-nixos:
   sudo nix-collect-garbage --delete-older-than 7d
