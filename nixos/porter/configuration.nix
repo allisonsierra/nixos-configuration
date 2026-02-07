@@ -175,6 +175,7 @@
     via
     file-roller
     p7zip
+    keepass
 
     # Windows support
     wineWowPackages.stable
@@ -246,13 +247,13 @@
   # Fonts
   fonts.packages = with pkgs; [
     montserrat
-    nerdfonts
-    fira-code
-    fira-code-symbols
+    nerd-fonts.fira-code
+    nerd-fonts.fira-mono
+    nerd-fonts.hack
     noto-fonts
     noto-fonts-cjk-sans
+    noto-fonts-emoji
     liberation_ttf
-
   ];
 
   # Nix Configuration
