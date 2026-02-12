@@ -264,6 +264,7 @@
     lsp-plugins
     x42-avldrums
     #vcv-rack
+    bitwig-studio
 
     (vscode-with-extensions.override {
       vscodeExtensions =
