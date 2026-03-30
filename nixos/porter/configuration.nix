@@ -114,7 +114,7 @@
   services.printing.enable = true;
 
   # Enable sound with pipewire.
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -195,7 +195,9 @@
     krita
     direnv
     starship
-    okular
+    kdePackages.okular
+    evince
+    mate.atril
 
     # Music
     lmms
@@ -252,7 +254,7 @@
     nerd-fonts.hack
     noto-fonts
     noto-fonts-cjk-sans
-    noto-fonts-emoji
+    noto-fonts-color-emoji
     liberation_ttf
   ];
 
@@ -266,7 +268,7 @@
   services.locate.enable = true;
 
   # Corsair Keyboard
-  hardware.ckb-next.enable = true;
+  # hardware.ckb-next.enable = true;
 
   # Bluetooth
   hardware.bluetooth.enable = true; # enables support for Bluetooth
