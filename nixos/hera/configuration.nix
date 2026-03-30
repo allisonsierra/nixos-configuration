@@ -3,7 +3,6 @@
 # AND DEPLOY VIA `just deploy-nixos porter`
 #
 # Acer Laptop "Hera"
-# Hybrid Nvidia/Intel Optimus GPU - Quadro RTX 4000
 #
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
@@ -66,7 +65,7 @@
   services.printing.enable = true;
 
   # Enable sound with pipewire.
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -131,7 +130,9 @@
     krita
     direnv
     starship
-    okular
+    kdePackages.okular
+    evince
+    mate.atril
 
     (vscode-with-extensions.override {
       vscodeExtensions =
@@ -188,7 +189,6 @@
   # Fonts
   fonts.packages = with pkgs; [
     montserrat
-    nerdfonts
     fira-code
     fira-code-symbols
     noto-fonts
@@ -224,9 +224,6 @@
 
   # List services that you want to enable:
   services.locate.enable = true;
-
-  # Corsair Keyboard
-  hardware.ckb-next.enable = true;
 
   # Bluetooth
   hardware.bluetooth.enable = true; # enables support for Bluetooth
