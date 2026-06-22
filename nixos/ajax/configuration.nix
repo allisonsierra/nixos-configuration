@@ -255,6 +255,8 @@
     direnv
     starship
     kdePackages.okular
+    evince
+    mate.atril
 
     # Music
     lmms
