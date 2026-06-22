@@ -1,0 +1,289 @@
+# DON'T EDIT THIS FILE IN /etc/nixos/configuration.nix
+# EDIT THIS from github.com/allisonsierra/nixos-configuration
+# AND DEPLOY VIA `just deploy-nixos ajax`
+#
+# NOTE: This file ignores /etc/nixos/hardware-configuration.nix. Move 
+# those configurations to this file.
+#
+# media01 Nix0S VM running on Ajax
+#
+# Edit this configuration file to define what should be installed on
+# your system.  Help is available in the configuration.nix(5) man page
+# and in the NixOS manual (accessible by running ‘nixos-help’).
+
+{ config, lib, pkgs, modulesPath, ... }:
+
+{
+  imports =
+    [ (modulesPath + "/installer/scan/not-detected.nix")
+    ];
+
+  # Bootloader.
+  boot.loader.grub.enable = true;
+  boot.loader.grub.device = "dev/vda";
+  boot.loader.grub.useOSProber = true;
+
+  # Networking
+  networking.hostName = "media01"; 
+  networking.networkmanager.enable = true;
+
+  # Open ports in the firewall.
+   networking.firewall.allowedTCPPorts = [ 22 ];
+  # networking.firewall.allowedUDPPorts = [ ... ];
+  
+  networking.useDHCP = false;
+  networking.interfaces.ipv4.addresses = [ {
+    address = "172.16.1.72";
+    prefixLength = 24;
+  } ];
+  networking.defaultGateway = "172.16.1.1";
+  networking.nameservers = ["127.0.0.1" "4.2.2.2" "8.8.8.8"];
+
+  # Local DNS caching
+  services.coredns.enable = true;
+  services.coredns.config =
+  ''
+    . {
+      # Cloudflare and Google
+      forward . 1.1.1.1 1.0.0.1 8.8.8.8 8.8.4.4
+      cache
+    }
+
+    # Returns 127.0.0.1 for any .local address
+    # TODO: 
+    # local {
+    #   template IN A  {
+    #       answer "{{ .Name }} 0 IN A 127.0.0.1"
+    #   }
+    }
+  '';
+
+
+  # Set your time zone.
+  time.timeZone = "America/New_York";
+
+  # Select internationalisation properties.
+  i18n.defaultLocale = "en_US.UTF-8";
+
+  i18n.extraLocaleSettings = {
+    LC_ADDRESS = "en_US.UTF-8";
+    LC_IDENTIFICATION = "en_US.UTF-8";
+    LC_MEASUREMENT = "en_US.UTF-8";
+    LC_MONETARY = "en_US.UTF-8";
+    LC_NAME = "en_US.UTF-8";
+    LC_NUMERIC = "en_US.UTF-8";
+    LC_PAPER = "en_US.UTF-8";
+    LC_TELEPHONE = "en_US.UTF-8";
+    LC_TIME = "en_US.UTF-8";
+  };
+
+  # Enable the X11 windowing system.
+  services.xserver.enable = true;
+
+  # Enable the XFCE Desktop Environment.
+  services.xserver.displayManager.lightdm.enable = true;
+  services.xserver.desktopManager.xfce.enable = true;
+  programs.thunar.plugins = with pkgs.xfce; [
+    thunar-archive-plugin
+    thunar-volman
+  ];
+
+  # Configure keymap in X11
+  services.xserver.xkb = {
+    layout = "us";
+    variant = "";
+  };
+
+  # Enable sound with pipewire.
+  services.pulseaudio.enable = false;
+  security.rtkit.enable = true;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+  };
+
+  # Keyring
+  security.pam.services.lightdm.enableGnomeKeyring = true;
+  services.gnome.gnome-keyring.enable = true;
+
+  # Define a user account. Don't forget to set a password with ‘passwd’.
+  users.users.allie = {
+    isNormalUser = true;
+    description = "Allie Sierra";
+    extraGroups = [ 
+        "networkmanager" 
+        "wheel" 
+        "mlocate"
+        "libvirtd"
+        "media"
+    ];
+    shell = pkgs.zsh;
+    packages = with pkgs; [
+    #  thunderbird
+    ];
+    
+  };
+
+  users.groups.media.gid = 948;
+
+  # zsh
+  programs.zsh.enable = true;
+
+  # Install firefox.
+  programs.firefox.enable = true;
+
+  # Allow unfree packages
+  nixpkgs.config.allowUnfree = true;
+
+  # List packages installed in system profile. To search, run:
+  # $ nix search wget
+  environment.systemPackages = with pkgs; [
+    
+    # System
+    vim
+    cifs-utils
+    wget
+    curl
+    htop
+    rclone
+    lshw
+    gnome-keyring
+    via
+    file-roller
+    p7zip
+    keepass
+    sysbench
+    chromium
+    dnsutils
+    mangohud
+    mission-center
+
+    # Disk usage analyzers
+    baobab
+    qdirstat
+
+    # Display
+    autorandr
+    arandr
+
+    # Dev
+    git
+    rustup
+    direnv
+    starship
+
+    (vscode-with-extensions.override {
+      vscodeExtensions =
+        with vscode-extensions;
+        [
+          bbenoist.nix
+          mkhl.direnv
+          github.vscode-github-actions
+          github.vscode-pull-request-github
+          golang.go
+          hashicorp.terraform
+          rust-lang.rust-analyzer
+          tamasfe.even-better-toml
+          skellock.just
+          davidanson.vscode-markdownlint
+          usernamehw.errorlens
+        ]
+        ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+          {
+            name = "rustowl-vscode";
+            publisher = "cordx56";
+            version = "0.1.3";
+            sha256 = "1z90in9kf3xh8bgsk678k22vnz86i7mfy4ckph915m37rpim7243";
+          }
+        ];
+    })
+
+    # Media
+    vdhcoapp # Video Downloadhelper for FF Extension
+    vlc
+    mpv
+
+  ];
+
+  # Fonts
+  fonts.packages = with pkgs; [
+    montserrat
+    nerd-fonts.fira-code
+    nerd-fonts.fira-mono
+    nerd-fonts.hack
+    noto-fonts
+    noto-fonts-cjk-sans
+    noto-fonts-color-emoji
+    liberation_ttf
+  ];
+
+  # Nix Configuration
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
+
+  # List services that you want to enable:
+  services.locate.enable = true;
+
+  # Enable the OpenSSH daemon.
+  services.openssh.enable = true;
+
+  
+
+  # Filesystems
+  #fileSystems."/" =
+  #  { device = "/dev/disk/by-uuid/188e2f2e-ae22-40b6-80f2-89b4d953b1ba";
+  #    fsType = "ext4";
+  #  };
+#
+  #fileSystems."/games" =
+  #  { device = "/dev/disk/by-uuid/aa945901-50ba-455f-8b1a-3cb13af46693";
+  #    fsType = "ext4";
+  #  };
+#
+  #fileSystems."/boot" =
+  #  { device = "/dev/disk/by-uuid/60D4-430E";
+  #    fsType = "vfat";
+  #    options = [ "fmask=0077" "dmask=0077" ];
+  #  };
+#
+  #fileSystems."/mount/media01" =
+  #  { device = "/dev/disk/by-uuid/2b62aa5a-f95a-4de6-82f6-2561d42b09cd";
+  #    fsType = "ext4";
+  #  };
+#
+  #fileSystems."/mount/media02" =
+  #  { device = "/dev/disk/by-uuid/ebea71ad-d3a8-434a-bb02-abe13862d550";
+  #    fsType = "ext4";
+  #  };
+#
+  #fileSystems."/mount/data01" =
+  #  { device = "/dev/disk/by-uuid/65987a3d-f097-4612-9092-3db0591b9ffd";
+  #    fsType = "ext4";
+  #  };
+#
+  #fileSystems."/mount/data02" =
+  #  { device = "/dev/disk/by-uuid/8a3ca63a-a06a-4d75-a513-6dee778a85a2";
+  #    fsType = "ext4";
+  #  };
+#
+  #swapDevices =
+  #  [ { device = "/dev/disk/by-uuid/de4a1080-a8ec-4593-9429-d04b615c31f6"; }
+  #  ];
+#
+
+  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+  hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+
+  # This value determines the NixOS release from which the default
+  # settings for stateful data, like file locations and database versions
+  # on your system were taken. It‘s perfectly fine and recommended to leave
+  # this value at the release version of the first install of this system.
+  # Before changing this value read the documentation for this option
+  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
+  system.stateVersion = "26.05"; # Did you read the comment?
+
+}
