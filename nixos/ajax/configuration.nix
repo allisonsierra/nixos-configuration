@@ -255,6 +255,8 @@
     direnv
     starship
     kdePackages.okular
+    evince
+    mate.atril
 
     # Music
     lmms
@@ -264,6 +266,7 @@
     lsp-plugins
     x42-avldrums
     #vcv-rack
+    bitwig-studio
 
     (vscode-with-extensions.override {
       vscodeExtensions =
