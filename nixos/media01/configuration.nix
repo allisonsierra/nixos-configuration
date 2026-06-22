@@ -33,7 +33,7 @@
   # networking.firewall.allowedUDPPorts = [ ... ];
   
   networking.useDHCP = false;
-  networking.interfaces.ipv4.addresses = [ {
+  networking.interfaces.ipv4.enp1s0.addresses = [ {
     address = "172.16.1.72";
     prefixLength = 24;
   } ];
