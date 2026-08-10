@@ -34,7 +34,7 @@
 
   # Networking
   networking.hostName = "ajax"; 
-  networking.networkmanager.enable = true;
+  networking.networkmanager.enable = false;
 
   # Open ports in the firewall.
    networking.firewall.allowedTCPPorts = [ 22 ];
@@ -230,7 +230,7 @@
     qdirstat
 
     # Windows support
-    wineWowPackages.stable
+    wineWow64Packages.stable
     winetricks
 
     # Display
@@ -295,7 +295,6 @@
     })
 
     # Media
-    vdhcoapp # Video Downloadhelper for FF Extension
     vlc
     mpv
     spotify
