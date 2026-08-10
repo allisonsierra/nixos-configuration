@@ -259,6 +259,7 @@
     mate.atril
 
     # Music
+    audacity
     lmms
     ardour
     vital
