@@ -5,7 +5,7 @@
 # NOTE: This file ignores /etc/nixos/hardware-configuration.nix. Move 
 # those configurations to this file.
 #
-# Gaming Rig "Ajax"
+# media01 Nix0S VM running on Ajax
 #
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
@@ -14,42 +14,27 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 {
-  imports =
-    [ (modulesPath + "/installer/scan/not-detected.nix")
-    ];
+  imports = [ 
+    (modulesPath + "/profiles/qemu-guest.nix")
+    ./hardware-configuration.nix
+  ];
 
   # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-
-  boot.kernelParams = [ "amd_pstate=guided" ];
-
-  boot.initrd.availableKernelModules = [ "nvme" "ahci" "xhci_pci" "usb_storage" "usbhid" "sd_mod" ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-amd" ];
-  boot.extraModulePackages = with config.boot.kernelPackages; [ xpadneo ];
-  boot.extraModprobeConfig = "options bluetooth disable_ertm=Y amdgpu ppfeaturemask=0xffffffff";
+  boot.loader.grub.enable = true;
+  boot.loader.grub.device = "/dev/vda";
+  boot.loader.grub.useOSProber = true;
 
   # Networking
-  networking.hostName = "ajax"; 
-  networking.networkmanager.enable = false;
+  networking.hostName = "media01"; 
+  networking.networkmanager.enable = true;
 
   # Open ports in the firewall.
    networking.firewall.allowedTCPPorts = [ 22 ];
   # networking.firewall.allowedUDPPorts = [ ... ];
-
-  # networking.interfaces.wlp13s0.useDHCP = lib.mkDefault true;
   
   networking.useDHCP = false;
-  networking.bridges = {
-    "br0" = {
-      interfaces = [ "enp14s0" ];
-    };
-  };
-  networking.interfaces.br0.ipv4.addresses = [ {
-    address = "172.16.1.45";
+  networking.interfaces.enp1s0.ipv4.addresses = [ {
+    address = "172.16.1.72";
     prefixLength = 24;
   } ];
   networking.defaultGateway = "172.16.1.1";
@@ -110,32 +95,6 @@
     variant = "";
   };
 
-  # See https://nixos.wiki/wiki/Nvidia for details on the config below
-
-  # Enable OpenGL
-  hardware.graphics = {
-    enable = true;
-    enable32Bit = true;
-  };
-
-  systemd.packages = with pkgs; [ lact ];
-  systemd.services.lactd.wantedBy = ["multi-user.target"];
-
-  # Enable CUPS to print documents.
-  services.avahi = {
-    enable = true;
-    nssmdns4 = true;
-    openFirewall = true;
-  };
-
-  services.printing = {
-    enable = true;
-    drivers = with pkgs; [
-      cups-filters
-      cups-browsed
-    ];
-  };
-
   # Enable sound with pipewire.
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
@@ -179,28 +138,6 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-  # Steam
-  programs.steam = {
-    enable = true;
-    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
-    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
-    localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
-  };
-
-  # Virtualization
-  programs.virt-manager.enable = true;
-  virtualisation.spiceUSBRedirection.enable = true;
-  
-  virtualisation.libvirtd = {
-    enable = true;
-    qemu = {
-      package = pkgs.qemu_kvm;
-      runAsRoot = true;
-      swtpm.enable = true;
-      vhostUserPackages = [ pkgs.virtiofsd ]; # Share disk between host and guest
-    };
-  };
-
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
@@ -219,7 +156,6 @@
     p7zip
     keepass
     sysbench
-    openrgb-with-all-plugins
     chromium
     dnsutils
     mangohud
@@ -229,45 +165,15 @@
     baobab
     qdirstat
 
-    # Windows support
-    wineWow64Packages.stable
-    winetricks
-
     # Display
     autorandr
     arandr
-    mons
-    radeontop
-    lact
-    amdgpu_top
-
-    # Gaming
-    steamtinkerlaunch # https://github.com/LucaPisl/LinuxModdingGuide
-    limo
-    protontricks
 
     # Dev
     git
     rustup
-    obsidian
-    inkscape-with-extensions
-    krita
     direnv
     starship
-    kdePackages.okular
-    evince
-    mate.atril
-
-    # Music
-    audacity
-    lmms
-    ardour
-    vital
-    infamousPlugins
-    lsp-plugins
-    x42-avldrums
-    #vcv-rack
-    bitwig-studio
 
     (vscode-with-extensions.override {
       vscodeExtensions =
@@ -298,12 +204,7 @@
     # Media
     vlc
     mpv
-    spotify
 
-    # Communication
-    discord
-    zoom-us
-    signal-desktop
   ];
 
   # Fonts
@@ -318,28 +219,6 @@
     liberation_ttf
   ];
 
-  # Enable Bluetooth
-  hardware.bluetooth = {
-    enable = true;
-    powerOnBoot = true;
-    settings.General = {
-      experimental = true; # show battery
-
-      # https://www.reddit.com/r/NixOS/comments/1ch5d2p/comment/lkbabax/
-      # for pairing bluetooth controller
-      Privacy = "device";
-      JustWorksRepairing = "always";
-      Class = "0x000100";
-      FastConnectable = true;
-    };
-  };
-
-  services.blueman.enable = true;
-
-  hardware.xpadneo.enable = true; # Enable the xpadneo driver for Xbox One wireless controllers
-
-
-
   # Nix Configuration
   nix.settings.experimental-features = [
     "nix-command"
@@ -349,55 +228,52 @@
   # List services that you want to enable:
   services.locate.enable = true;
 
-  # Corsair RGB Management
-  services.hardware.openrgb.enable = true;
-
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
 
   
 
   # Filesystems
-  fileSystems."/" =
-    { device = "/dev/disk/by-uuid/188e2f2e-ae22-40b6-80f2-89b4d953b1ba";
-      fsType = "ext4";
-    };
-
-  fileSystems."/games" =
-    { device = "/dev/disk/by-uuid/aa945901-50ba-455f-8b1a-3cb13af46693";
-      fsType = "ext4";
-    };
-
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/60D4-430E";
-      fsType = "vfat";
-      options = [ "fmask=0077" "dmask=0077" ];
-    };
-
-  fileSystems."/mount/media01" =
-    { device = "/dev/disk/by-uuid/2b62aa5a-f95a-4de6-82f6-2561d42b09cd";
-      fsType = "ext4";
-    };
-
-  fileSystems."/mount/media02" =
-    { device = "/dev/disk/by-uuid/ebea71ad-d3a8-434a-bb02-abe13862d550";
-      fsType = "ext4";
-    };
-
-  fileSystems."/mount/data01" =
-    { device = "/dev/disk/by-uuid/65987a3d-f097-4612-9092-3db0591b9ffd";
-      fsType = "ext4";
-    };
-
-  fileSystems."/mount/data02" =
-    { device = "/dev/disk/by-uuid/8a3ca63a-a06a-4d75-a513-6dee778a85a2";
-      fsType = "ext4";
-    };
-
-  swapDevices =
-    [ { device = "/dev/disk/by-uuid/de4a1080-a8ec-4593-9429-d04b615c31f6"; }
-    ];
-
+  #fileSystems."/" =
+  #  { device = "/dev/disk/by-uuid/188e2f2e-ae22-40b6-80f2-89b4d953b1ba";
+  #    fsType = "ext4";
+  #  };
+#
+  #fileSystems."/games" =
+  #  { device = "/dev/disk/by-uuid/aa945901-50ba-455f-8b1a-3cb13af46693";
+  #    fsType = "ext4";
+  #  };
+#
+  #fileSystems."/boot" =
+  #  { device = "/dev/disk/by-uuid/60D4-430E";
+  #    fsType = "vfat";
+  #    options = [ "fmask=0077" "dmask=0077" ];
+  #  };
+#
+  #fileSystems."/mount/media01" =
+  #  { device = "/dev/disk/by-uuid/2b62aa5a-f95a-4de6-82f6-2561d42b09cd";
+  #    fsType = "ext4";
+  #  };
+#
+  #fileSystems."/mount/media02" =
+  #  { device = "/dev/disk/by-uuid/ebea71ad-d3a8-434a-bb02-abe13862d550";
+  #    fsType = "ext4";
+  #  };
+#
+  #fileSystems."/mount/data01" =
+  #  { device = "/dev/disk/by-uuid/65987a3d-f097-4612-9092-3db0591b9ffd";
+  #    fsType = "ext4";
+  #  };
+#
+  #fileSystems."/mount/data02" =
+  #  { device = "/dev/disk/by-uuid/8a3ca63a-a06a-4d75-a513-6dee778a85a2";
+  #    fsType = "ext4";
+  #  };
+#
+  #swapDevices =
+  #  [ { device = "/dev/disk/by-uuid/de4a1080-a8ec-4593-9429-d04b615c31f6"; }
+  #  ];
+#
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
@@ -408,6 +284,6 @@
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "25.05"; # Did you read the comment?
+  system.stateVersion = "26.05"; # Did you read the comment?
 
 }
