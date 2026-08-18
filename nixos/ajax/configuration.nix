@@ -224,6 +224,7 @@
     dnsutils
     mangohud
     mission-center
+    onboard
 
     # Disk usage analyzers
     baobab
@@ -257,6 +258,8 @@
     kdePackages.okular
     evince
     mate.atril
+    scribus
+    libreoffice
 
     # Music
     audacity
@@ -304,6 +307,9 @@
     discord
     zoom-us
     signal-desktop
+
+    # Fonts
+    google-fonts
   ];
 
   # Fonts
@@ -316,6 +322,13 @@
     noto-fonts-cjk-sans
     noto-fonts-color-emoji
     liberation_ttf
+    monaspace
+    cozette
+    atkinson-hyperlegible-next
+    atkinson-hyperlegible-mono
+    corefonts
+    ibm-plex
+    adwaita-fonts
   ];
 
   # Enable Bluetooth
